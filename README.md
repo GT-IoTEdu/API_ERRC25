@@ -1,309 +1,520 @@
 ﻿
-# Sistema de Registro IoT com Autenticação CAFe e pfSense
+# 🚀 API-IoT-EDU
 
-## Diagrama de Arquitetura
-![Diagrama de Arquitetura do Sistema](https://raw.githubusercontent.com/JonerMello/COVID19/refs/heads/master/APIIoTV1.png) 
+  
 
-*Diagrama completo dos componentes e fluxos do sistema*
+Sistema integrado para gerenciamento seguro de dispositivos IoT em ambientes acadêmicos, combinando autenticação federada via CAFe, gerenciamento automatizado de regras no pfSense e monitoramento inteligente de tráfego com detecção automática de ameaças.
 
-## Visão Geral
-Sistema integrado para gerenciamento seguro de dispositivos IoT em ambientes acadêmicos, combinando:
-- ✅ Autenticação federada via CAFe
-- 🔐 Gerenciamento automatizado de regras no pfSense
-- 🤖 Monitoramento inteligente de tráfego com IA
-- 📊 Painel administrativo de dispositivos IoTs cadastrados
+  
 
-## Componentes Principais
+## 📋 Sobre o Sistema
 
-### 1. Módulo de Autenticação
-- **Integração CAFe** (SAML 2.0/OAuth2)
-- Fluxo JWT interno após autenticação federada
-- Controle de permissões granular
+  
 
+O **API-IoT-EDU** é uma plataforma completa desenvolvida para atender às demandas de segurança, governança e escalabilidade das redes acadêmicas nacionais. Diferente de todas as soluções existentes, o sistema unifica em uma única plataforma integrada:
 
-### 2. Serviço da API_IoT_EDU
-| Funcionalidade | Tecnologia | Detalhes |
-|---------------|------------|----------|
-| Autenticação CAFe | SAML/OAuth2 | Integração com federação acadêmica |
-| Validação de Dispositivos | Python + NetAddr | Checagem de IP/MAC e faixas autorizadas |
-| Gerenciamento pfSense | Python + Requests | Rotação automática de API Keys<br>Endpoints: `/api/v1/firewall/rule` |
-| Auditoria | Definir | Log de operações com:<br>- Usuário CAFe<br>- Timestamp<br>- Ações no firewall |
+  
 
-### 3. Endpoints Principais:
+- ✅ **Gerenciamento de Dispositivos IoT**: Cadastro, edição e monitoramento de dispositivos com sincronização automática entre banco de dados e pfSense
 
-| Endpoint | Método | Descrição | Parâmetros |
-|----------|--------|-----------|------------|
-| `/auth/cafe` | GET | Inicia fluxo de autenticação | `redirect_uri` |
-| `/api/devices` | POST | Registra novo dispositivo IoT | ```json<br>{<br>  "ip": "string",<br>  "mac": "string",<br>  "description": "string"<br>}``` |
-| `/api/firewall/rules` | GET | Lista regras ativas | `?filter=iot` |
-| `/monitoring/alerts` | GET | Consulta anomalias | `?severity=high` |
+- 🔐 **Autenticação Federada**: Integração com CAFe (SAML 2.0/OAuth2), Google OAuth2 e login administrativo
 
-## Fluxo de Operação
-1. Autenticação via CAFe (SAML/OAuth2)
-2. Validação de permissões no sistema
-3. Cadastro do dispositivo:
-   ```json
-   POST /api/devices
-   {
-     "ip": "192.168.10.50",
-     "mac": "00:1A:2B:3C:4D:5E",
-     "description": "Sensor Ambiental - Lab 5A"
-   }
-   ```
-   ### 3.1 Criação automática da regra no pfSense:
- ```json
-POST /api/v1/firewall/rule
-Headers: {
-  "Authorization": "Bearer {api_key}",
-  "X-CAFE-User": "user@university.edu.br"
-}
-Body: {
-  "interface": "IoT_VLAN",
-  "src": "192.168.10.50",
-  "descr": "IoT-EDU: Sensor Lab 5A",
-  "tracker": 123456789,
-  "top": true
-}
-  ```
+- 🛡️ **Bloqueio Automático**: Detecção automática de ameaças via Zeek Network Security Monitor e bloqueio proativo através de integração nativa com firewall (pfSense)
 
+- 📊 **Gestão Multi-Institucional**: Suporte a múltiplas instituições e campi com controle granular de permissões
 
-----------
+- 🔄 **Atribuição Automática de IP**: Sistema de DHCP integrado para gerenciamento de endereços IP
 
-## 🔐 **Endpoints do pfSense para Integração com Dispositivos IoT**
+- 📈 **Dashboard Administrativo**: Interface web moderna com três níveis de acesso (Usuário, Gestor, Administrador)
 
-Estes endpoints foram selecionados para permitir:
+  
 
--   ✅ Cadastro automático de regras para dispositivos IoT
-    
--   🔄 Atualização dinâmica de grupos (aliases)
-    
--   📡 Monitoramento de tráfego e status de rede
-    
--   🧾 Consulta de logs para análise inteligente
-    
+## 🏗️ Arquitetura
 
-----------
+  
+![Diagrama de Arquitetura do Sistema](https://raw.githubusercontent.com/JonerMello/COVID19/refs/heads/master/APIIoTV1.png)
+O sistema é composto por:
 
-### 1. **Autenticação**
+  
 
-> Gera token JWT para autenticar nas chamadas da API do pfSense
+-  **Backend**: API REST desenvolvida em FastAPI (Python) com integração MySQL
 
-```
-POST /api/v1/access_token
+-  **Frontend**: Interface web desenvolvida em Next.js 15.2 com React 19 e TypeScript
 
-```
+-  **Integrações**:
 
-**Parâmetros:**
+- pfSense API v2 (gerenciamento de firewall e DHCP)
 
-Nome
+- Zeek Network Security Monitor (análise de tráfego e detecção de ameaças)
 
-Tipo
+- CAFe (autenticação federada acadêmica)
 
-Descrição
+  
 
-client_id
+## 📦 Pré-requisitos
 
-string
+  
 
-ID do cliente registrado
+### Backend
 
-client_secret
+- Python 3.9 ou superior
 
-string
+- MySQL 5.7+ ou MariaDB 10.3+
 
-Segredo associado ao cliente
+- OpenSSL (para certificados SAML)
 
-username
+- pfSense com API REST habilitada
 
-string
+- Zeek Network Security Monitor (opcional, para detecção de ameaças)
 
-Nome de usuário
+  
 
-password
+### Frontend
 
-string
+- Node.js 18+ ou superior
 
-Senha
+- npm, yarn ou pnpm
 
-----------
+  
 
-### 2. **Gerenciamento de Regras de Firewall**
+## 🚀 Instalação
 
-> Permite controlar o acesso dos dispositivos IoT à rede
+  
 
--   **Listar Regras**
-    
+### 1. Clonar o Repositório
 
-```
-GET /api/v1/firewall/rule
+  
+
+```bash
+
+git  clone  https://github.com/GT-IoTEdu/API_ERRC25.git
+
+cd  API_ERRC25
 
 ```
 
--   **Criar Regra (ex: liberar IP IoT)**
-    
+  
 
-```
-POST /api/v1/firewall/rule
+### 2. Instalação do Backend
 
-```
+  
 
-**Campos obrigatórios (exemplo IoT):**
+#### 2.1. Criar ambiente virtual (recomendado)
 
-```json
-{
-  "interface": "IoT_VLAN",
-  "protocol": "any",
-  "src": "192.168.10.50",
-  "dst": "any",
-  "dstport": "any",
-  "descr": "IoT-EDU: Sensor Lab 5A",
-  "top": true
-}
+  
 
-```
+```bash
 
--   **Remover Regra**
-    
+cd  backend
 
-```
-DELETE /api/v1/firewall/rule/{id}
+python  -m  venv  venv
 
-```
+  
 
-----------
+# Windows
 
-### 3. **Aliases (Grupos de IPs IoT)**
+venv\Scripts\activate
 
-> Organiza dispositivos por grupos para facilitar regras e relatórios
+  
 
--   **Listar Aliases**
-    
+# Linux/Mac
 
-```
-GET /api/v1/firewall/alias
+source  venv/bin/activate
 
 ```
 
--   **Criar Alias**
-    
+  
 
-```
-POST /api/v1/firewall/alias
+#### 2.2. Instalar dependências
 
-```
+  
 
-**Campos:**
+```bash
 
-```json
-{
-  "name": "Dispositivos_IoT",
-  "type": "host",
-  "address": "192.168.10.50 192.168.10.51"
-}
+pip  install  -r  requirements.txt
 
 ```
 
--   **Atualizar Alias**
-    
+  
 
-```
-PUT /api/v1/firewall/alias/{name}
+#### 2.3. Configurar variáveis de ambiente
 
-```
+  
 
-----------
+Copie o arquivo de exemplo e configure as variáveis:
 
-### 4. **Interfaces de Rede**
+  
 
-> Consulta e monitoramento das interfaces onde os dispositivos estão conectados
+```bash
 
--   **Listar Interfaces**
-    
-
-```
-GET /api/v1/interface
+cp  env_example.txt  .env
 
 ```
 
--   **Status das Interfaces**
-    
+  
+
+Edite o arquivo `.env` com suas configurações:
+
+  
+
+```env
+
+# Configurações do banco de dados MySQL
+
+MYSQL_USER=IoT_EDU
+
+MYSQL_PASSWORD=sua_senha_mysql_aqui
+
+MYSQL_HOST=localhost
+
+MYSQL_DB=iot_edu
+
+  
+
+# Configurações de autenticação CAFe (OAuth2/OpenID Connect)
+
+CAFE_CLIENT_ID=seu_client_id_cafe_aqui
+
+CAFE_CLIENT_SECRET=seu_client_secret_cafe_aqui
+
+CAFE_AUTH_URL=https://sso.cafe.unipampa.edu.br/auth/realms/CAFe/protocol/openid-connect/auth
+
+CAFE_TOKEN_URL=https://sso.cafe.unipampa.edu.br/auth/realms/CAFe/protocol/openid-connect/token
+
+CAFE_USERINFO_URL=https://sso.cafe.unipampa.edu.br/auth/realms/CAFe/protocol/openid-connect/userinfo
+
+CAFE_REDIRECT_URI=http://localhost:8000/api/auth/cafe/callback
+
+  
+
+# Configurações da API do pfSense
+
+PFSENSE_API_URL=https://seu-pfsense.local/api/v2/
+
+PFSENSE_API_KEY=sua_api_key_pfsense_aqui
+
+  
+
+# Configurações JWT para SAML
+
+JWT_SECRET_KEY=sua_chave_secreta_jwt_muito_segura_aqui
+
+  
+
+# Configurações do Zeek Network Security Monitor
+
+ZEEK_API_URL=http://192.168.100.1/zeek-api
+
+ZEEK_API_TOKEN=seu_token_zeek_aqui
+
+  
+
+# Configurações de atribuição automática de IP
+
+IP_RANGE_START=192.168.100.1
+
+IP_RANGE_END=192.168.100.254
+
+IP_RANGE_EXCLUDED=192.168.100.1,192.168.100.100,192.168.100.200
+
+  
+
+# Configurações de acesso administrativo
+
+ADMIN_ACCESS=admin@iotedu.local
+
+ADMIN_PASSWORD=admin123
 
 ```
-GET /api/v1/interface/status
+
+  
+
+#### 2.4. Criar banco de dados
+
+  
+
+Crie o banco de dados MySQL:
+
+  
+
+```sql
+
+CREATE  DATABASE iot_edu CHARACTER  SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'IoT_EDU'@'localhost' IDENTIFIED BY  'sua_senha_mysql_aqui';
+
+GRANT ALL PRIVILEGES ON iot_edu.*  TO  'IoT_EDU'@'localhost';
+
+FLUSH PRIVILEGES;
 
 ```
 
-----------
+  
 
-### 5. **Leases DHCP (IP Dinâmico dos Dispositivos IoT)**
+#### 2.5. Inicializar tabelas do banco de dados
 
-> Permite identificar ou fixar IPs de dispositivos registrados
+  
 
--   **Consultar Leases Ativos**
-    
+```bash
 
-```
-GET /api/v1/dhcpd/lease
+python  -m  db.create_tables
 
 ```
 
--   **Reservar IP Estático para MAC**
-    
+  
 
-```
-POST /api/v1/dhcpd/lease
+### 3. Instalação do Frontend
 
-```
+  
 
-**Campos comuns:**
+#### 3.1. Instalar dependências
 
-```json
-{
-  "mac": "00:1A:2B:3C:4D:5E",
-  "ip": "192.168.10.50",
-  "hostname": "sensor-lab5a"
-}
+  
 
-```
+```bash
 
-----------
+cd  ../frontend
 
-### 6. **Logs de Firewall**
+npm  install
 
-> Análise de tráfego e detecção de anomalias por IA
+# ou
 
-```
-GET /api/v1/system/log/firewall
+yarn  install
+
+# ou
+
+pnpm  install
 
 ```
 
-> Retorna os logs brutos do tráfego processado pelo firewall.
+  
 
-----------
+#### 3.2. Configurar variáveis de ambiente
 
-### 7. **Informações do Sistema**
+  
 
-> Detalhes úteis para diagnóstico da infraestrutura
+Crie um arquivo `.env.local` na pasta `frontend/`:
 
-```
-GET /api/v1/system/info
+  
 
-```
+```env
 
-Retorna:
-
-```json
-{
-  "version": "2.7.0",
-  "hostname": "fw-campus",
-  "uptime": "3 days, 14:27",
-  ...
-}
+NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ```
 
-----------
+  
+
+> **Nota**: Ajuste a URL da API conforme necessário para seu ambiente.
+
+  
+
+## ▶️ Execução
+
+  
+
+### Executar o Backend
+
+  
+
+No diretório `backend/`:
+
+  
+
+```bash
+
+# Ativar ambiente virtual (se estiver usando)
+
+# Windows: venv\Scripts\activate
+
+# Linux/Mac: source venv/bin/activate
+
+  
+
+# Executar servidor de desenvolvimento
+
+python start_server.py
+
+  
 
 
-# Instalação
-# Execução
+```
+
+  
+
+O backend estará disponível em: `http://localhost:8000`
+
+  
+
+- Documentação interativa (Swagger): `http://localhost:8000/docs`
+
+- Documentação alternativa (ReDoc): `http://localhost:8000/redoc`
+
+  
+
+### Executar o Frontend
+
+  
+
+No diretório `frontend/`:
+
+  
+
+```bash
+
+# Modo desenvolvimento
+
+npm  run  dev
+
+
+```
+
+  
+
+O frontend estará disponível em: `http://localhost:3000`
+
+  
+
+
+
+## 📚 Documentação Adicional
+
+  
+
+-  **Documentação da API**: Acesse `/docs` após iniciar o backend
+
+-  **Documentação do Backend**: Consulte `backend/docs/`
+
+-  **Documentação do Frontend**: Consulte `frontend/docs/`
+
+-  **Guia de Deploy**: Consulte `backend/deploy/`
+
+  
+
+## 🔧 Funcionalidades Principais
+
+  
+
+### Autenticação e Autorização
+
+
+- Autenticação Google OAuth2
+
+- Login administrativo 
+
+- Controle de permissões baseado em níveis (USER, MANAGER, ADMIN)
+
+  
+
+### Gerenciamento de Dispositivos
+
+- Cadastro e gerenciamento de dispositivos IoT
+
+- Atribuição de dispositivos a usuários
+
+- Sincronização automática com pfSense
+
+- Validação de IP/MAC e faixas autorizadas
+
+  
+
+### Integração pfSense
+
+- Gerenciamento de aliases DHCP
+
+- Mapeamentos estáticos DHCP
+
+- Configuração de regras de firewall
+
+- Aplicação automática de bloqueios
+
+  
+
+### Monitoramento e Segurança
+
+- Integração com Zeek Network Security Monitor
+
+- Detecção automática de ameaças
+
+- Bloqueio automático de dispositivos maliciosos
+
+- Sistema de feedback para bloqueios
+
+- Histórico de incidentes de segurança
+
+  
+
+## 🤝 Contribuindo
+
+  
+
+Este projeto faz parte do Grupo de Trabalho IoT-EDU. Para contribuir:
+
+  
+
+1. Faça um fork do repositório
+
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+
+5. Abra um Pull Request
+
+  
+
+## 📄 Licença
+
+  
+
+Este projeto está sob licença acadêmica. Consulte o arquivo de licença para mais detalhes.
+
+  
+
+## 👥 Equipe
+
+  
+
+**Grupo de Trabalho IoT-EDU**
+
+  
+
+- Desenvolvido para ambientes acadêmicos nacionais
+
+- Integração com CAFe (Comunidade Acadêmica Federada)
+
+- Suporte a múltiplas instituições e campi
+
+  
+
+## 🔗 Links Úteis
+
+  
+
+-  **Repositório**: [https://github.com/GT-IoTEdu/API_ERRC25](https://github.com/GT-IoTEdu/API_ERRC25)
+
+-  **Documentação CAFe**: [https://www.cafeexpresso.rnp.br/](https://www.cafeexpresso.rnp.br/)
+
+-  **pfSense**: [https://www.pfsense.org/](https://www.pfsense.org/)
+
+-  **Zeek**: [https://zeek.org/](https://zeek.org/)
+
+  
+
+## ⚠️ Notas Importantes
+
+  
+
+- Certifique-se de que o pfSense tenha a API REST habilitada e configurada corretamente
+
+- Para produção, altere todas as senhas padrão e chaves secretas
+
+- Configure adequadamente as variáveis de ambiente conforme seu ambiente
+
+- O sistema requer acesso de rede ao pfSense e ao Zeek (se utilizado)
+
+  
+
+  
+
