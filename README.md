@@ -444,50 +444,6 @@ O frontend estará disponível em: `http://localhost:3000`
 
   
 
-## 🤝 Contribuindo
-
-  
-
-Este projeto faz parte do Grupo de Trabalho IoT-EDU. Para contribuir:
-
-  
-
-1. Faça um fork do repositório
-
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-
-5. Abra um Pull Request
-
-  
-
-## 📄 Licença
-
-  
-
-Este projeto está sob licença acadêmica. Consulte o arquivo de licença para mais detalhes.
-
-  
-
-## 👥 Equipe
-
-  
-
-**Grupo de Trabalho IoT-EDU**
-
-  
-
-- Desenvolvido para ambientes acadêmicos nacionais
-
-- Integração com CAFe (Comunidade Acadêmica Federada)
-
-- Suporte a múltiplas instituições e campi
-
-  
-
 ## 🔗 Links Úteis
 
   
